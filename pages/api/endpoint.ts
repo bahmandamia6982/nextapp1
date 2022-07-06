@@ -76,7 +76,7 @@ export default cors(
     try {
       await start;
       console.warn(
-        `connected to apollo server on http://localhost:3000/api/bahman`
+        `connected to apollo server on http://localhost:3000/api/endpoint`
       );
     } catch (error) {
       console.warn("failed to connect to apollo server");
