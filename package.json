@@ -9,7 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/passport": "^1.0.9",
+    "@types/passport-http-bearer": "^1.0.37",
+    "apollo-server": "^3.9.0",
+    "apollo-server-core": "^3.9.0",
+    "apollo-server-micro": "^3.9.0",
+    "graphql": "^16.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.3",
     "next": "12.2.0",
+    "passport": "^0.6.0",
+    "passport-http-bearer": "^1.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
