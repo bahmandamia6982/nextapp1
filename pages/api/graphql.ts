@@ -56,9 +56,8 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true,
+  introspection: false,
   csrfPrevention: true,
-  plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   context: ({ req }) => {
     return {};
   },
@@ -77,7 +76,7 @@ export default cors(
     try {
       await start;
       console.warn(
-        `connected to apollo server on http://localhost:3000/api/graphql`
+        `connected to apollo server on http://localhost:3000/api/bahman`
       );
     } catch (error) {
       console.warn("failed to connect to apollo server");
