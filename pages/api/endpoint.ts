@@ -1,12 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApolloServer, gql } from "apollo-server-micro";
-import {
-  ApolloServerPluginLandingPageGraphQLPlayground,
-  AuthenticationError,
-} from "apollo-server-core";
 import Cors from "micro-cors";
 import User from "../../models/User";
 import mongoose from "mongoose";
+import { ApolloServerPluginLandingPageDisabled } from "apollo-server-core";
 
 const connect = mongoose.connect(
   "mongodb+srv://bahmandamia6982:bahmandamia6982@demo.wstts.mongodb.net/demo?retryWrites=true&w=majority"
@@ -58,6 +55,7 @@ const server = new ApolloServer({
   resolvers,
   introspection: false,
   csrfPrevention: true,
+  plugins: [ApolloServerPluginLandingPageDisabled()],
   context: ({ req }) => {
     return {};
   },

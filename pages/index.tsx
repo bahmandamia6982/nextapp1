@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const Home: NextPage<Props> = (props) => {
-  return <div className={styles.container}>Coming soon ...</div>;
+  return <div className={styles.container}>This is out app in international...</div>;
 };
 
 export default Home;
