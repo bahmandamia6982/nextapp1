@@ -8,8 +8,6 @@ type Props = {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-
-
   return {
     props: {
       soon: false,
@@ -18,7 +16,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
 };
 
 const Home: NextPage<Props> = (props) => {
-  return <div className={styles.container}>{ process.env.NODE_ENV || 'none' }</div>;
+  return (
+    <div className={styles.container}>
+      <div className="container">MODE = {process.env.NODE_ENV || "none"}</div>
+    </div>
+  );
 };
 
 export default Home;
