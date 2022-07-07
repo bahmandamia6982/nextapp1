@@ -21,6 +21,7 @@ const Home: NextPage<Props> = (props) => {
   return (
     <div className={styles.container}>
       <Head>
+        <title>BioG | Online Avatar Maker</title>
         <link rel="icon" type="image/png" href={favicon.src} />
       </Head>
       <div className="container">
