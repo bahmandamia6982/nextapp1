@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 const Home: NextPage<Props> = (props) => {
   return (
     <div className={styles.container}>
-      <div className="container">MODE = {process.env.NODE_ENV || "none"}</div>
+      <div className="container">MODE = You are in {process.env.NODE_ENV || "none"} mode</div>
     </div>
   );
 };

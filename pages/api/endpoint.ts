@@ -1,20 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ApolloServer, gql } from "apollo-server-micro";
 import Cors from "micro-cors";
-import User from "../../models/User";
 import mongoose from "mongoose";
-import { ApolloServerPluginLandingPageDisabled } from "apollo-server-core";
+import {
+  ApolloServerPluginLandingPageGraphQLPlayground,
+  ApolloServerPluginLandingPageDisabled,
+  ForbiddenError,
+} from "apollo-server-core";
+import { isDevMode } from "../../utils/utils";
+import User from "../../models/User";
+import { JsonWebTokenError } from "jsonwebtoken";
+import { PageNotFoundError } from "next/dist/shared/lib/utils";
 
-const connect = mongoose.connect(
+const connectDatabase = mongoose.connect(
   "mongodb+srv://bahmandamia6982:bahmandamia6982@demo.wstts.mongodb.net/demo?retryWrites=true&w=majority"
 );
 
-const cors = Cors();
+const cors = Cors({
+  allowMethods: ["POST"],
+  origin: "*/*",
+  allowCredentials: true,
+});
 
 const typeDefs = gql`
   type Query {
     token: String
-    getUsers(name: String!, skip: Float = 0, limit: Float! = 0): [User]
+    getUsers(name: String!, skip: Float = 0, limit: Float! = 100): [User]
   }
   type Mutation {
     createUser(name: String!, age: Float!): User!
@@ -28,26 +39,21 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     token: (parent: any, args: any, context: any) => {
-      return "eya4s9a4sx9a4s9x4asx";
+      return "this is token";
     },
-    getUsers: async (parent: any, args: any, context: any) => {
-      const nameRegex = new RegExp(args.name, "i");
-      const user = await User.find({ name: nameRegex })
-        .skip(args.skip)
-        .limit(args.limit);
-      return user;
+    getUsers: async (parent: any, { name, skip, limit }: any, context: any) => {
+      const regex = new RegExp(name, 'i')
+      const users = await User.find({ name: regex }).skip(skip).limit(limit);
+      return users
     },
   },
   Mutation: {
     createUser: async (parent: any, args: any, context: any) => {
-      const user = new User({
-        name: args.name,
-        age: args.age,
-      });
-      await user.save();
-      return user;
-    },
-  },
+        const newUser = new User({...args})
+        const user = await newUser.save()
+        return user
+    }
+  }
 };
 
 const server = new ApolloServer({
@@ -55,24 +61,28 @@ const server = new ApolloServer({
   resolvers,
   introspection: false,
   csrfPrevention: true,
-  plugins: [ApolloServerPluginLandingPageDisabled()],
+  plugins: [
+    isDevMode
+      ? ApolloServerPluginLandingPageGraphQLPlayground()
+      : ApolloServerPluginLandingPageDisabled(),
+  ],
   context: ({ req }) => {
     return {};
   },
 });
 
-const start = server.start();
+const startServer = server.start();
 
 export default cors(
   async (req: NextApiRequest | any, res: NextApiResponse | any) => {
     try {
-      await connect;
+      await connectDatabase;
       console.warn("connected to mongodb");
     } catch (error) {
       console.warn("failed to onnect monodb");
     }
     try {
-      await start;
+      await startServer;
       console.warn(
         `connected to apollo server on http://localhost:3000/api/endpoint`
       );
