@@ -1,64 +1,31 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { ApolloServer, gql } from "apollo-server-micro";
-import Cors from "micro-cors";
-import mongoose from "mongoose";
+import { ApolloServer } from "apollo-server-micro";
 import {
   ApolloServerPluginLandingPageGraphQLPlayground,
   ApolloServerPluginLandingPageDisabled,
-  ForbiddenError,
 } from "apollo-server-core";
+import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import mongoose from "mongoose";
+import Cors from "micro-cors";
 import { isDevMode } from "../../utils/utils";
-import User from "../../models/User";
-import { JsonWebTokenError } from "jsonwebtoken";
-import { PageNotFoundError } from "next/dist/shared/lib/utils";
+import { authDirective } from "../../models/Directives/Auth.directive";
+import { upperDirective } from "../../models/Directives/Upper.directive";
+import TypeDefs from "../../models/TypeDefs";
+import Resolvers from "../../models/Resolvers";
 
-const connectDatabase = mongoose.connect(
-  "mongodb+srv://bahmandamia6982:bahmandamia6982@demo.wstts.mongodb.net/demo?retryWrites=true&w=majority"
-);
+const connect = mongoose.connect(process.env.MONGO_URL || "");
 
-const cors = Cors({
-  allowMethods: ["POST"],
-  origin: "*/*",
-  allowCredentials: true,
+let schema = makeExecutableSchema({
+  typeDefs: mergeTypeDefs(TypeDefs),
+  resolvers: mergeResolvers(Resolvers),
 });
 
-const typeDefs = gql`
-  type Query {
-    token: String
-    getUsers(name: String!, skip: Float = 0, limit: Float! = 100): [User]
-  }
-  type Mutation {
-    createUser(name: String!, age: Float!): User!
-  }
-  type User {
-    name: String
-    age: Float
-  }
-`;
-
-const resolvers = {
-  Query: {
-    token: (parent: any, args: any, context: any) => {
-      return "this is token";
-    },
-    getUsers: async (parent: any, { name, skip, limit }: any, context: any) => {
-      const regex = new RegExp(name, 'i')
-      const users = await User.find({ name: regex }).skip(skip).limit(limit);
-      return users
-    },
-  },
-  Mutation: {
-    createUser: async (parent: any, args: any, context: any) => {
-        const newUser = new User({...args})
-        const user = await newUser.save()
-        return user
-    }
-  }
-};
+schema = authDirective(schema, "auth");
+schema = upperDirective(schema, "upper");
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
   introspection: false,
   csrfPrevention: true,
   plugins: [
@@ -67,33 +34,38 @@ const server = new ApolloServer({
       : ApolloServerPluginLandingPageDisabled(),
   ],
   context: ({ req }) => {
-    return {};
+    const data: any = {};
+    data.token = req.headers.authorization?.split(" ")[1] ?? null;
+    return data;
   },
 });
 
-const startServer = server.start();
+const cors = Cors({
+  allowMethods: ["POST"],
+  allowHeaders: ["authorization"],
+  origin: "*/*",
+  allowCredentials: true,
+});
 
 export default cors(
   async (req: NextApiRequest | any, res: NextApiResponse | any) => {
     try {
-      await connectDatabase;
-      console.warn("connected to mongodb");
+      await connect;
+      console.warn("mongoose connected...");
     } catch (error) {
-      console.warn("failed to onnect monodb");
+      console.warn("mongoose connection failed");
     }
     try {
-      await startServer;
-      console.warn(
-        `connected to apollo server on http://localhost:3000/api/endpoint`
-      );
+      await server.start();
+      console.warn(`apollo server running...`);
     } catch (error) {
-      console.warn("failed to connect to apollo server");
+      console.warn("apollo server connection failed");
     }
     try {
       await server.createHandler({ path: req.url })(req, res);
-      console.warn("apollo server handler created");
+      console.warn("apollo server handler created...");
     } catch (error) {
-      console.warn("failed to apollo server create handler");
+      console.warn("server handler creation failed");
     }
   }
 );
