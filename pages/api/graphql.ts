@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import 'colors'; // * Used for terminal text colors
+import 'colors'; // ! Used for terminal text colors and bahman damia
 import Cors from 'micro-cors';
 import { ApolloServer } from 'apollo-server-micro';
 import { ApolloServerPluginLandingPageDisabled, Context, ContextFunction } from 'apollo-server-core';
