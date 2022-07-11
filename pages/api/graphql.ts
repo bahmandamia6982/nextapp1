@@ -12,6 +12,8 @@ import { uppercaseDirective } from '../../source/Directives/Uppercase.directive'
 import { TypeDefs, Resolvers } from '../../source/SchemaDefs';
 import '../../source/Utils/i18n';
 
+console.log("branch dev created and added")
+
 const cors = Cors({
   allowCredentials: false
 });
