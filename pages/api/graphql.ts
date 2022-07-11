@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import 'colors'; // ! Used for terminal text colors
+import 'colors'; // * Used for terminal text colors
 import Cors from 'micro-cors';
 import { ApolloServer } from 'apollo-server-micro';
 import { ApolloServerPluginLandingPageDisabled, Context, ContextFunction } from 'apollo-server-core';
@@ -11,7 +11,6 @@ import { authDirective } from '../../source/Directives/Auth.directive';
 import { uppercaseDirective } from '../../source/Directives/Uppercase.directive';
 import { TypeDefs, Resolvers } from '../../source/SchemaDefs';
 import '../../source/Utils/i18n';
-import { MicroRequest } from 'apollo-server-micro/dist/types';
 
 const cors = Cors({
   allowCredentials: false
