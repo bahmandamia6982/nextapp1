@@ -8,15 +8,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { initializeI18Next } from '../app/Utils/i18n';
 type Props = {
   soon?: Boolean;
-  mongo?: String
+  mongo?: String;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const mongo = process.env.MONGO_URL
+  const mongo = process.env.MONGO_URL;
   return {
     props: {
       soon: true,
-      mongo
+      mongo,
     },
   };
 };
@@ -33,6 +33,7 @@ const Home: NextPage<Props> = (props) => {
   return (
     <div className={styles.container}>
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>BioG | Online Avatar Maker</title>
         <link rel="icon" type="image/png" href={favicon.src} />
       </Head>
@@ -55,8 +56,9 @@ const Home: NextPage<Props> = (props) => {
         <div style={{ padding: 20 }}>
           <input type="number" value={count} min={0} max={100} onChange={(e) => setCount(parseInt(e.target.value))} />
         </div>
-        <div>{props.mongo} ON {process.env.NODE_ENV}</div>
-
+        <div>
+          {props.mongo} ON {process.env.NODE_ENV}
+        </div>
       </div>
     </div>
   );
