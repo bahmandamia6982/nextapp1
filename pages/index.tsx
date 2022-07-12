@@ -33,7 +33,7 @@ const Home: NextPage<Props> = (props) => {
   return (
     <div className={styles.container}>
       <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
         <title>BioG | Online Avatar Maker</title>
         <link rel="icon" type="image/png" href={favicon.src} />
       </Head>
