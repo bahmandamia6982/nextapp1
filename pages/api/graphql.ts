@@ -37,7 +37,7 @@ const server = new ApolloServer({
   introspection: false,
   csrfPrevention: true,
   plugins: [
-    !isDevMode ? ApolloServerPluginLandingPageDisabled() : {},
+    ApolloServerPluginLandingPageDisabled(),
     {
       async serverWillStart() {
         return {
