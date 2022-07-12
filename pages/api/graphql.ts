@@ -2,24 +2,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import 'colors'; // * Used for terminal text colors and VSCode and Windows 11
 import Cors from 'micro-cors';
 import { ApolloServer } from 'apollo-server-micro';
-import { ApolloServerPluginLandingPageDisabled } from 'apollo-server-core';
 import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import mongoose from 'mongoose';
-import { isDevMode } from '../../app/Utils/helpers';
 import { authDirective } from '../../app/Directives/Auth.directive';
 import { uppercaseDirective } from '../../app/Directives/Uppercase.directive';
 import { TypeDefs, Resolvers } from '../../app/SchemaDefs';
 import '../../app/Utils/i18n';
 import { initializeI18Next } from '../../app/Utils/i18n';
-import { Disposable } from 'graphql-ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
-import { WebSocketServer } from 'ws';
 import { readFileSync } from 'fs';
 import path from 'path';
-
-initializeI18Next(); // ! init i18n translations before starting apollo server
-console.warn(`i18n initialized now at ${new Date(Date.now()).toDateString()}`);
 
 const cors = Cors();
 const connectMongoDBAtlasServer = () => mongoose.connect(process.env.MONGO_URL || '');
@@ -31,12 +23,7 @@ let schema = makeExecutableSchema({
 schema = authDirective(schema, 'auth');
 schema = uppercaseDirective(schema, 'uppercase');
 
-const wsServer = new WebSocketServer({ port: 5000 });
-let serverCleanup: Disposable | null = null;
-
-const plugins = [];
-if (process.env.NODE_ENV == 'production') {
-}
+let host: String | null = ""
 
 const server = new ApolloServer({
   schema,
@@ -54,16 +41,7 @@ const server = new ApolloServer({
             };
           },
         }
-      : {},
-    {
-      async serverWillStart() {
-        return {
-          async drainServer() {
-            await serverCleanup?.dispose();
-          },
-        };
-      },
-    },
+      : {}
   ],
   context: ({ req }) => {
     const context: any = {};
@@ -87,8 +65,9 @@ export default cors(async (req: NextApiRequest | any, res: NextApiResponse | any
     return false;
   }
 
-  res.socket.server.ws = wsServer;
-  serverCleanup = useServer({ schema }, wsServer);
+  console.warn((req as NextApiRequest).headers.host)
+
+  initializeI18Next();
 
   await connectMongoDBAtlasServer();
 
