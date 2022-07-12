@@ -16,8 +16,4 @@ export const UserTypeDefs = gql`
     createUser(fields: UserFields): User!
   }
 
-  type Subscription {
-    userCreated: User!
-  }
-
 `;

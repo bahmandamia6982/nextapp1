@@ -5,7 +5,7 @@ import favicon from '../public/favicon.png';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Trans, useTranslation } from 'react-i18next';
-import { initialize } from '../source/Utils/i18n';
+import { initializeI18Next } from '../app/Utils/i18n';
 type Props = {
   soon?: boolean;
 };
@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   };
 };
 
-initialize();
+initializeI18Next();
 
 const Home: NextPage<Props> = (props) => {
   const { t } = useTranslation();

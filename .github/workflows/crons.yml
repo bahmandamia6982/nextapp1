@@ -9,5 +9,4 @@ jobs:
       - name: detect malicious content including phone numbers
         run: |
           curl --request POST \
-          --url 'https://nextapp1-ivory.com/api/cron' \
-          --header 'Authorization: Bearer ${{ secrets.API_SECRET_KEY }}'
+          --url 'https://nextapp1-ivory.com/api/cron'

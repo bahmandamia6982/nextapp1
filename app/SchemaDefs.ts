@@ -1,6 +1,6 @@
-import { QueryTypeDefs } from './TypeDefs/Query.typedefs';
+import { QueryTypeDefs } from './TypeDefs/Query.typeDefs';
 import { QueryResolvers } from './Resolvers/Query.resolvers';
-import { UserTypeDefs } from './TypeDefs/User.typedef';
+import { UserTypeDefs } from './TypeDefs/User.typeDefs';
 import { UserResolvers } from './Resolvers/User.resolvers';
 
 /**

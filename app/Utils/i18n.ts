@@ -8,7 +8,7 @@ const resources = {
   ku: { translation: KurdishTranslation },
 };
 
-export const initialize = async () => {
+export const initializeI18Next = async () => {
   return await i18next.use(initReactI18next).init({
     lng: 'en',
     fallbackLng: 'en',
@@ -16,3 +16,4 @@ export const initialize = async () => {
     resources,
   });
 };
+

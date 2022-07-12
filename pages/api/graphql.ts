@@ -1,23 +1,27 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import 'colors'; // * Used for terminal text colors and VSCode and Windows11
+import 'colors'; // * Used for terminal text colors and VSCode and Windows 11
 import Cors from 'micro-cors';
 import { ApolloServer } from 'apollo-server-micro';
-import { ApolloServerPluginLandingPageDisabled, Context, ContextFunction } from 'apollo-server-core';
+import { ApolloServerPluginLandingPageDisabled } from 'apollo-server-core';
 import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import mongoose from 'mongoose';
-import { isDevMode } from '../../source/Utils/helpers';
-import { authDirective } from '../../source/Directives/Auth.directive';
-import { uppercaseDirective } from '../../source/Directives/Uppercase.directive';
-import { TypeDefs, Resolvers } from '../../source/SchemaDefs';
-import '../../source/Utils/i18n';
+import { isDevMode } from '../../app/Utils/helpers';
+import { authDirective } from '../../app/Directives/Auth.directive';
+import { uppercaseDirective } from '../../app/Directives/Uppercase.directive';
+import { TypeDefs, Resolvers } from '../../app/SchemaDefs';
+import '../../app/Utils/i18n';
+import { initializeI18Next } from '../../app/Utils/i18n';
+import { Disposable } from 'graphql-ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { WebSocketServer } from 'ws';
+import { NextRequest } from 'next/server';
 
-console.log("branch dev created and added")
+initializeI18Next(); // ! init i18n translations before starting apollo server
+console.warn(`i18n initialized now at ${new Date(Date.now()).toDateString()}`);
 
-const cors = Cors({
-  allowCredentials: false
-});
-const connect = mongoose.connect(process.env.MONGO_URL || '');
+const cors = Cors();
+const connectMongoDBAtlasServer = () => mongoose.connect(process.env.MONGO_URL || '');
 
 let schema = makeExecutableSchema({
   typeDefs: mergeTypeDefs(TypeDefs),
@@ -26,42 +30,54 @@ let schema = makeExecutableSchema({
 schema = authDirective(schema, 'auth');
 schema = uppercaseDirective(schema, 'uppercase');
 
+const wsServer = new WebSocketServer({ port: 5000 });
+let serverCleanup: Disposable | null = null;
+
 const server = new ApolloServer({
   schema,
   introspection: true,
   csrfPrevention: true,
-  plugins: [!isDevMode ? ApolloServerPluginLandingPageDisabled() : {}],
+  plugins: [
+    !isDevMode ? ApolloServerPluginLandingPageDisabled() : {},
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup?.dispose();
+          },
+        };
+      },
+    },
+  ],
   context: ({ req }) => {
     const context: any = {};
     context.token = req.headers.authorization?.split(' ')[1] ?? null;
-    context.locale = req.headers?.locale ?? 'en';
+    context.language = (req as NextApiRequest).headers['accept-language'] ?? 'en';
     return context;
   },
 });
+
+const startApolloServer = server.start();
+const getHandler = async (url: string) => {
+  await startApolloServer;
+  return server.createHandler({
+    path: url,
+  });
+};
 
 export default cors(async (req: NextApiRequest | any, res: NextApiResponse | any) => {
   if (req.method === 'OPTIONS') {
     res.end();
     return false;
   }
-  try {
-    await connect;
-    console.log('› mongodb is running...'.white.bgGreen);
-  } catch (error) {
-    console.error('× mongoose connection failed'.bgRed);
-  }
-  try {
-    await server.start();
-    console.log('› apollo-server is running...'.white.bgGreen);
-  } catch (error) {
-    console.error('× apollo-server already started'.bgYellow);
-  }
-  try {
-    await server.createHandler({ path: req.url })(req, res);
-    console.log('› apollo-server handler has been created...'.white.bgGreen);
-  } catch (error) {
-    console.error('× apollo-server handler  creation failed'.bgRed);
-  }
+
+  res.socket.server.ws = wsServer;
+  serverCleanup = useServer({ schema }, wsServer);
+
+  await connectMongoDBAtlasServer();
+
+  const handler = await getHandler(req.url);
+  await handler(req, res);
 });
 
 export const config = {
