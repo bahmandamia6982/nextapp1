@@ -47,7 +47,8 @@ const server = new ApolloServer({
         async serverWillStart() {
           return {
             async renderLandingPage() {
-              const html = readFileSync('app/templates/404.html').toString()
+              console.log('reading file...')
+              const html = readFileSync('app/templates/404.html', 'utf-8')
               return { html };
             },
           };
