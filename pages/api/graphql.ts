@@ -37,7 +37,7 @@ const server = new ApolloServer({
   introspection: false,
   csrfPrevention: true,
   plugins: [
-    ApolloServerPluginLandingPageDisabled(),
+    process.env.NODE_ENV == "production" && ApolloServerPluginLandingPageDisabled(),
     {
       async serverWillStart() {
         return {
