@@ -7,13 +7,16 @@ import Head from 'next/head';
 import { Trans, useTranslation } from 'react-i18next';
 import { initializeI18Next } from '../app/Utils/i18n';
 type Props = {
-  soon?: boolean;
+  soon?: Boolean;
+  mongo?: String
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const mongo = process.env.MONGO_URL
   return {
     props: {
       soon: true,
+      mongo
     },
   };
 };
@@ -52,6 +55,8 @@ const Home: NextPage<Props> = (props) => {
         <div style={{ padding: 20 }}>
           <input type="number" value={count} min={0} max={100} onChange={(e) => setCount(parseInt(e.target.value))} />
         </div>
+        <div>{props.mongo} ON {process.env.NODE_ENV}</div>
+
       </div>
     </div>
   );
