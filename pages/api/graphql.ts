@@ -15,6 +15,7 @@ import { initializeI18Next } from '../../app/Utils/i18n';
 import { Disposable } from 'graphql-ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { WebSocketServer } from 'ws';
+import { readFileSync } from 'fs';
 
 initializeI18Next(); // ! init i18n translations before starting apollo server
 console.warn(`i18n initialized now at ${new Date(Date.now()).toDateString()}`);
@@ -42,26 +43,16 @@ const server = new ApolloServer({
   csrfPrevention: true,
   plugins: [
     process.env.NODE_ENV == 'production'
-      ? ApolloServerPluginLandingPageDisabled()
-      : {
-          async serverWillStart() {
-            return {
-              async renderLandingPage() {
-                const html = `
-                <!DOCTYPE html>
-                <html>
-                  <head>
-                  </head>
-                  <body>
-                    <h1>404 | Page Not Found</h1>
-                  </body>
-                </html>
-                `;
-                return { html };
-              },
-            };
-          },
+      ? {
+        async serverWillStart() {
+          return {
+            async renderLandingPage() {
+              const html = readFileSync('app/templates/404.html').toString()
+              return { html };
+            },
+          };
         },
+      } : {},
     {
       async serverWillStart() {
         return {
