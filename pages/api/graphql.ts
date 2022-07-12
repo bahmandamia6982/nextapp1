@@ -41,7 +41,27 @@ const server = new ApolloServer({
   introspection: false,
   csrfPrevention: true,
   plugins: [
-    process.env.NODE_ENV == "production" ? ApolloServerPluginLandingPageDisabled() : {},
+    process.env.NODE_ENV == 'production'
+      ? ApolloServerPluginLandingPageDisabled()
+      : {
+          async serverWillStart() {
+            return {
+              async renderLandingPage() {
+                const html = `
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                  </head>
+                  <body>
+                    <h1>404 | Page Not Found</h1>
+                  </body>
+                </html>
+                `;
+                return { html };
+              },
+            };
+          },
+        },
     {
       async serverWillStart() {
         return {
