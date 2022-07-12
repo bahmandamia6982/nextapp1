@@ -15,7 +15,6 @@ import { initializeI18Next } from '../../app/Utils/i18n';
 import { Disposable } from 'graphql-ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { WebSocketServer } from 'ws';
-import { NextRequest } from 'next/server';
 
 initializeI18Next(); // ! init i18n translations before starting apollo server
 console.warn(`i18n initialized now at ${new Date(Date.now()).toDateString()}`);
@@ -35,7 +34,7 @@ let serverCleanup: Disposable | null = null;
 
 const server = new ApolloServer({
   schema,
-  introspection: true,
+  introspection: false,
   csrfPrevention: true,
   plugins: [
     !isDevMode ? ApolloServerPluginLandingPageDisabled() : {},
