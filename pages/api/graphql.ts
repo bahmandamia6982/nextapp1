@@ -16,6 +16,7 @@ import { Disposable } from 'graphql-ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { WebSocketServer } from 'ws';
 import { readFileSync } from 'fs';
+import path from 'path';
 
 initializeI18Next(); // ! init i18n translations before starting apollo server
 console.warn(`i18n initialized now at ${new Date(Date.now()).toDateString()}`);
@@ -44,16 +45,16 @@ const server = new ApolloServer({
   plugins: [
     process.env.NODE_ENV == 'production'
       ? {
-        async serverWillStart() {
-          return {
-            async renderLandingPage() {
-              console.log('reading file...')
-              const html = readFileSync('app/templates/404.html', 'utf-8')
-              return { html };
-            },
-          };
-        },
-      } : {},
+          async serverWillStart() {
+            return {
+              async renderLandingPage() {
+                const html = readFileSync(path.join(process.cwd(), 'app/templates/404.html'), 'utf-8');
+                return { html };
+              },
+            };
+          },
+        }
+      : {},
     {
       async serverWillStart() {
         return {
