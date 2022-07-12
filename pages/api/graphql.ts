@@ -47,7 +47,7 @@ const server = new ApolloServer({
         async serverWillStart() {
           return {
             async renderLandingPage() {
-              const html = readFileSync('../../app/templates/404.html').toString()
+              const html = readFileSync('app/templates/404.html').toString()
               return { html };
             },
           };
