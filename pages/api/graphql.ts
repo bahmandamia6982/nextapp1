@@ -32,12 +32,16 @@ schema = uppercaseDirective(schema, 'uppercase');
 const wsServer = new WebSocketServer({ port: 5000 });
 let serverCleanup: Disposable | null = null;
 
+const plugins = [];
+if (process.env.NODE_ENV == 'production') {
+}
+
 const server = new ApolloServer({
   schema,
   introspection: false,
   csrfPrevention: true,
   plugins: [
-    process.env.NODE_ENV == "production" && ApolloServerPluginLandingPageDisabled(),
+    !isDevMode ? ApolloServerPluginLandingPageDisabled() : {},
     {
       async serverWillStart() {
         return {
