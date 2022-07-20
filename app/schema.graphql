@@ -1,0 +1,43 @@
+directive @auth(role: Role!) on FIELD_DEFINITION
+directive @uppercase on FIELD_DEFINITION
+
+enum Role {
+  MASTER
+  ADMIN
+  EDITOR
+  USER
+}
+
+type Query {
+  token: String
+  direction: String
+  getUser(name: String): User @auth(role: MASTER)
+  getUsers: [User] @auth(role: USER)
+  getUserByID(id: ID!): User
+  getPost: Post
+}
+
+type Mutation {
+  createUser(fields: UserFields): User!
+}
+
+type User {
+  id: ID
+  email: String
+  name: String
+  currentAge: Int @deprecated(reason: "Use `age` field instead")
+  age: Int
+}
+
+input UserFields {
+  email: String!
+  name: String!
+  age: Int!
+}
+
+type Post {
+  id: ID!
+  title: String
+  content: String
+  date: String
+}

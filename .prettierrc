@@ -2,5 +2,5 @@
   "bracketSpacing": true,
   "bracketSameLine": true,
   "singleQuote": true,
-  "printWidth": 150
+  "printWidth": 100
 }

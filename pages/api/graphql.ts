@@ -1,33 +1,23 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import 'colors'; // * Used for terminal text colors and VSCode and Windows 11
-import Cors from 'micro-cors';
-import { ApolloServer } from 'apollo-server-micro';
-import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import mongoose from 'mongoose';
-import { authDirective } from '../../app/Directives/Auth.directive';
-import { uppercaseDirective } from '../../app/Directives/Uppercase.directive';
-import { TypeDefs, Resolvers } from '../../app/SchemaDefs';
-import '../../app/Utils/i18n';
-import { initializeI18Next } from '../../app/Utils/i18n';
 import { readFileSync } from 'fs';
 import path from 'path';
+import Cors from 'micro-cors';
+import { ApolloServer } from 'apollo-server-micro';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import mongoose from 'mongoose';
+import { typeDefs, resolvers } from '../../app/schema';
+import { initializeI18Next } from '../../app/utils/i18n';
+import { applyDirectives } from '../../app/directives/apply';
 
 const cors = Cors();
 const connectMongoDBAtlasServer = () => mongoose.connect(process.env.MONGO_URL || '');
 
-let schema = makeExecutableSchema({
-  typeDefs: mergeTypeDefs(TypeDefs),
-  resolvers: mergeResolvers(Resolvers),
-});
-schema = authDirective(schema, 'auth');
-schema = uppercaseDirective(schema, 'uppercase');
-
-let host: String | null = ""
-
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+// TODO: Here we apply all directive on schema
+applyDirectives(schema);
 const server = new ApolloServer({
   schema,
-  introspection: false,
+  introspection: process.env.NODE_ENV == 'development',
   csrfPrevention: true,
   plugins: [
     process.env.NODE_ENV == 'production'
@@ -35,13 +25,16 @@ const server = new ApolloServer({
           async serverWillStart() {
             return {
               async renderLandingPage() {
-                const html = readFileSync(path.join(process.cwd(), 'app/templates/404.html'), 'utf-8');
+                const html = readFileSync(
+                  path.join(process.cwd(), 'app/templates/404.html'),
+                  'utf-8'
+                );
                 return { html };
               },
             };
           },
         }
-      : {}
+      : {},
   ],
   context: ({ req }) => {
     const context: any = {};
@@ -64,8 +57,6 @@ export default cors(async (req: NextApiRequest | any, res: NextApiResponse | any
     res.end();
     return false;
   }
-
-  console.warn((req as NextApiRequest).headers.host)
 
   initializeI18Next();
 

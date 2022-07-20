@@ -1,6 +1,6 @@
 import i18next, { t } from 'i18next';
-import EnglishTranslation from '../Languages/en';
-import KurdishTranslation from '../Languages/ku';
+import EnglishTranslation from '../languages/en';
+import KurdishTranslation from '../languages/ku';
 import { initReactI18next } from 'react-i18next';
 
 const resources = {

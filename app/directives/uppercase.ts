@@ -1,7 +1,7 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver } from 'graphql';
 
-export const uppercaseDirective = (schema, directive) => {
+export const applyUppercaseDirective = (schema, directive) => {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (config) => {
       const uppercase = getDirective(schema, config, directive)?.[0];

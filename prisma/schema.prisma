@@ -5,13 +5,68 @@ generator client {
   provider = "prisma-client-js"
 }
 
+
+
 datasource db {
   provider = "mongodb"
   url      = env("MONGO_URL")
 }
 
 model User {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  name String @default("")
-  age  Int
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  email      String?    @unique
+  name       String
+  age        Int
+  currentAge String?    
+  role       UserRole?  @default(USER)
+  metas      UserMeta[]
+  posts      Post[]
+}
+
+model UserMeta {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+}
+
+model PostType {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+
+  @@unique([name, slug])
+}
+
+model Post {
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  date   DateTime
+  type   PostType   @relation(fields: [typeId], references: [id])
+  typeId String     @db.ObjectId
+  role   PostRole   @default(COLLECTION)
+  metas  PostMeta[]
+  User   User?      @relation(fields: [userId], references: [id])
+  userId String?    @db.ObjectId
+}
+
+model PostMeta {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  value  Json
+  Post   Post?   @relation(fields: [postId], references: [id])
+  postId String? @db.ObjectId
+}
+
+enum UserRole {
+  MASTER
+  ADMIN
+  EDITOR
+  USER
+}
+
+enum PostRole {
+  COLLECTION
+  SINGLETYPE
 }

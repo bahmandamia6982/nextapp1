@@ -5,7 +5,7 @@ import favicon from '../public/favicon.png';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Trans, useTranslation } from 'react-i18next';
-import { initializeI18Next } from '../app/Utils/i18n';
+import { initializeI18Next } from '../app/utils/i18n';
 type Props = {
   soon?: Boolean;
   mongo?: String;
@@ -27,9 +27,6 @@ const Home: NextPage<Props> = (props) => {
   const { t } = useTranslation();
 
   const [count, setCount] = React.useState(0);
-
-  console.warn(t('direction'));
-
   return (
     <div className={styles.container}>
       <Head>
@@ -51,13 +48,13 @@ const Home: NextPage<Props> = (props) => {
           </span>
         </div>
         <div>
-          <Trans count={count}>apple</Trans>
+          <Trans count={count || 0}>apple</Trans>
         </div>
-        <div style={{ padding: 20 }}>
+        <div style={{ paddingTop: 10, paddingBottom: 10 }}>
           <input type="number" value={count} min={0} max={100} onChange={(e) => setCount(parseInt(e.target.value))} />
         </div>
         <div>
-          {props.mongo} ON {process.env.NODE_ENV}
+          {props.mongo} <span style={{color: 'red'}}>ON</span> {process.env.NODE_ENV}
         </div>
       </div>
     </div>

@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-}
 
-module.exports = nextConfig
+const withGraphQL = require('next-plugin-graphql');
+
+const nextConfig = withGraphQL({
+  reactStrictMode: true,
+});
+
+module.exports = nextConfig;

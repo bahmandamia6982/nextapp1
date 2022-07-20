@@ -1,11 +1,9 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
-import { AuthenticationError } from 'apollo-server-core';
 import { defaultFieldResolver } from 'graphql';
-import { NotAdminError } from '../Errors/NotAdminError.error';
-import { UserNotFoundError } from '../Errors/UserNotFoundError.error';
-import User from '../Models/User';
+import { NotAdminError } from '../errors/NotAdminError';
+import { UserNotFoundError } from '../errors/UserNotFoundError';
 
-export const authDirective = (schema, directive) => {
+export const applyAuthDirective = (schema, directive) => {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (config) => {
       const auth = getDirective(schema, config, directive)?.[0];
