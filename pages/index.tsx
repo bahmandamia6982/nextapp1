@@ -1,14 +1,15 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import styles from '../styles/Home.module.css';
+import styles from '../styles/Index.module.scss';
 import favicon from '../public/favicon.png';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Trans, useTranslation } from 'react-i18next';
 import { initializeI18Next } from '../app/utils/i18n';
+
 type Props = {
   soon?: Boolean;
-  mongo?: String;
+  mongo?: String; 
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
@@ -47,14 +48,17 @@ const Home: NextPage<Props> = (props) => {
             <Trans>direction</Trans>
           </span>
         </div>
-        <div>
-          <Trans count={count || 0}>apple</Trans>
-        </div>
         <div style={{ paddingTop: 10, paddingBottom: 10 }}>
           <input type="number" value={count} min={0} max={100} onChange={(e) => setCount(parseInt(e.target.value))} />
         </div>
         <div>
-          {props.mongo} <span style={{color: 'red'}}>ON</span> {process.env.NODE_ENV}
+          <Trans count={count || 0}>apple</Trans>
+        </div>
+        <div>
+          <code>{props.mongo}</code>
+        </div>
+        <div>
+          <code lang='javascript'>console.log(`bahman damia`)</code>
         </div>
       </div>
     </div>

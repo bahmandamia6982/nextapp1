@@ -1,51 +1,46 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Client
+
 generator client {
   provider = "prisma-client-js"
 }
 
-
+// Datasource
 
 datasource db {
   provider = "mongodb"
   url      = env("MONGO_URL")
 }
 
+// Models
+
 model User {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   email      String?    @unique
   name       String
   age        Int
-  currentAge String?    
-  role       UserRole?  @default(USER)
+  currentAge String?
+  role       Role?      @default(USER)
   metas      UserMeta[]
   posts      Post[]
 }
 
 model UserMeta {
   id     String  @id @default(auto()) @map("_id") @db.ObjectId
-  title  String
+  name   String?
+  value  String?
   User   User?   @relation(fields: [userId], references: [id])
   userId String? @db.ObjectId
-}
-
-model PostType {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  name  String @unique
-  slug  String @unique
-  posts Post[]
-
-  @@unique([name, slug])
 }
 
 model Post {
   id     String     @id @default(auto()) @map("_id") @db.ObjectId
   title  String
-  date   DateTime
-  type   PostType   @relation(fields: [typeId], references: [id])
-  typeId String     @db.ObjectId
-  role   PostRole   @default(COLLECTION)
+  date   DateTime   @updatedAt
+  type   Type       @default(POST)
+  parent String?    @db.ObjectId
   metas  PostMeta[]
   User   User?      @relation(fields: [userId], references: [id])
   userId String?    @db.ObjectId
@@ -54,19 +49,39 @@ model Post {
 model PostMeta {
   id     String  @id @default(auto()) @map("_id") @db.ObjectId
   name   String
-  value  Json
+  value  String
   Post   Post?   @relation(fields: [postId], references: [id])
   postId String? @db.ObjectId
 }
 
-enum UserRole {
+model Taxonomy {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  slug      String   @unique
+  terms     Term[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Term {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  slug       String
+  parent     String?  @db.ObjectId
+  taxonomyId String   @db.ObjectId
+  taxonomy   Taxonomy @relation(fields: [taxonomyId], references: [id])
+}
+
+// Enums
+
+enum Role {
   MASTER
   ADMIN
   EDITOR
   USER
 }
 
-enum PostRole {
-  COLLECTION
-  SINGLETYPE
+enum Type {
+  POST
+  PAGE
 }
