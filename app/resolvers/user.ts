@@ -1,4 +1,4 @@
-import { prisma } from '../utils/prisma';
+import { prisma } from '../utilities/prisma';
 
 export const UserResolvers = {
   Query: {

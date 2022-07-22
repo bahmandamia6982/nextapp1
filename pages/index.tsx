@@ -5,7 +5,7 @@ import favicon from '../public/favicon.png';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Trans, useTranslation } from 'react-i18next';
-import { initializeI18Next } from '../app/utils/i18n';
+import { initializeI18Next } from '../app/utilities/i18n8n8n8n';
 
 type Props = {
   soon?: Boolean;

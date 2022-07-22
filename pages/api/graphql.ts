@@ -6,7 +6,7 @@ import { ApolloServer } from 'apollo-server-micro';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import mongoose from 'mongoose';
 import { typeDefs, resolvers } from '../../app/schema';
-import { initializeI18Next } from '../../app/utils/i18n';
+import { initializeI18Next } from '../../app/utilities/i18n';
 import { applyDirectives } from '../../app/directives/apply';
 
 const cors = Cors();
