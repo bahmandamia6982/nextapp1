@@ -9,7 +9,7 @@ export const initializeI18Next = async () => {
     fallbackLng: 'en',
     pluralSeparator: '_',
     resources: {
-      en: { translation: English },
+      en: { translation: English }, 
       ku: { translation: Kurdish },
     },
   });
