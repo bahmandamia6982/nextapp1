@@ -1,6 +1,6 @@
 import i18next, { t } from 'i18next';
-import { translations as English } from './app/languages/en';
-import { translations as Kurdish } from './app/languages/ku';
+import { translations as English } from '../languages/en';
+import { translations as Kurdish } from '../languages/ku';
 import { initReactI18next } from 'react-i18next';
 
 export const initializeI18Next = async () => {
