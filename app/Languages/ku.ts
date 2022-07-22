@@ -1,4 +1,4 @@
-export default {
+export const translations =  {
   direction: 'rtl',
   biog: 'بایوجی v{{version}}',
   apple_zero: 'هیچ شیوێک نەدۆزرایەوە',

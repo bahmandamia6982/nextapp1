@@ -1,4 +1,4 @@
-export default {
+export const translations =  {
   direction: 'ltr',
   biog: 'BioG v{{version}}',
   apple_zero: 'no apples here',
