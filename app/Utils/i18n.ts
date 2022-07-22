@@ -1,10 +1,10 @@
 import i18next, { t } from 'i18next';
-import {translations as English} from '../languages/en';
-import {translations as Kurdish} from '../languages/ku';
+import { translations as English } from '../languages/en';
+import { translations as Kurdish } from '../languages/ku';
 import { initReactI18next } from 'react-i18next';
 
 const resources = {
-  en: { translation: English. },
+  en: { translation: English },
   ku: { translation: Kurdish },
 };
 
